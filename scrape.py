@@ -20,6 +20,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone, date
 from pathlib import Path
 
+from tqdm import tqdm
+
 import praw
 import yaml
 from rich.console import Console
@@ -179,85 +181,102 @@ def scrape_subreddit(
     subreddit_name: str,
     config: Config,
     limit: int,
-    console: Console,
+    position: int = 0,
 ) -> list[dict]:
     """Scrape one subreddit using config queries, date range, and extraction categories."""
     sub = reddit.subreddit(subreddit_name)
     seen_ids: set[str] = set()
     results: list[dict] = []
+    consecutive_429s = 0
 
-    for query in config.search_queries:
-        try:
-            for post in sub.search(
-                query, sort="relevance", time_filter=config.time_filter, limit=limit
-            ):
-                if post.id in seen_ids:
-                    continue
-                seen_ids.add(post.id)
+    with tqdm(
+        config.search_queries,
+        desc=f"r/{subreddit_name:<22}",
+        position=position,
+        leave=True,
+        unit="q",
+        dynamic_ncols=True,
+    ) as pbar:
+        for query in pbar:
+            pbar.set_postfix(found=len(results), refresh=False)
+            try:
+                for post in sub.search(
+                    query, sort="relevance", time_filter=config.time_filter, limit=limit
+                ):
+                    if post.id in seen_ids:
+                        continue
+                    seen_ids.add(post.id)
 
-                if post.score < config.min_score:
-                    continue
+                    if post.score < config.min_score:
+                        continue
 
-                post_date = datetime.fromtimestamp(post.created_utc, tz=timezone.utc).date()
-                if config.date_from and post_date < config.date_from:
-                    continue
-                if config.date_to and post_date > config.date_to:
-                    continue
+                    post_date = datetime.fromtimestamp(post.created_utc, tz=timezone.utc).date()
+                    if config.date_from and post_date < config.date_from:
+                        continue
+                    if config.date_to and post_date > config.date_to:
+                        continue
 
-                post.comment_sort = "best"
-                post.comments.replace_more(limit=0)
-                top_comments: list[dict] = []
-                for comment in post.comments[:15]:
-                    if hasattr(comment, "body") and comment.score >= 1:
-                        top_comments.append({
-                            "author": str(comment.author) if comment.author else "[deleted]",
-                            "score": comment.score,
-                            "body": comment.body[:2000],
-                            "created_utc": datetime.fromtimestamp(
-                                comment.created_utc, tz=timezone.utc
-                            ).isoformat(),
-                        })
-                        if comment.score >= 5 and hasattr(comment, "replies"):
-                            for reply in comment.replies[:3]:
-                                if hasattr(reply, "body") and reply.score >= 2:
-                                    top_comments.append({
-                                        "author": str(reply.author) if reply.author else "[deleted]",
-                                        "score": reply.score,
-                                        "body": reply.body[:1000],
-                                        "is_reply": True,
-                                        "created_utc": datetime.fromtimestamp(
-                                            reply.created_utc, tz=timezone.utc
-                                        ).isoformat(),
-                                    })
+                    post.comment_sort = "best"
+                    post.comments.replace_more(limit=0)
+                    top_comments: list[dict] = []
+                    for comment in post.comments[:15]:
+                        if hasattr(comment, "body") and comment.score >= 1:
+                            top_comments.append({
+                                "author": str(comment.author) if comment.author else "[deleted]",
+                                "score": comment.score,
+                                "body": comment.body[:2000],
+                                "created_utc": datetime.fromtimestamp(
+                                    comment.created_utc, tz=timezone.utc
+                                ).isoformat(),
+                            })
+                            if comment.score >= 5 and hasattr(comment, "replies"):
+                                for reply in comment.replies[:3]:
+                                    if hasattr(reply, "body") and reply.score >= 2:
+                                        top_comments.append({
+                                            "author": str(reply.author) if reply.author else "[deleted]",
+                                            "score": reply.score,
+                                            "body": reply.body[:1000],
+                                            "is_reply": True,
+                                            "created_utc": datetime.fromtimestamp(
+                                                reply.created_utc, tz=timezone.utc
+                                            ).isoformat(),
+                                        })
 
-                full_text = post.title + " " + (post.selftext or "")
-                comment_text = " ".join(c["body"] for c in top_comments)
-                all_text = full_text + " " + comment_text
+                    full_text = post.title + " " + (post.selftext or "")
+                    comment_text = " ".join(c["body"] for c in top_comments)
+                    all_text = full_text + " " + comment_text
 
-                results.append({
-                    "id": post.id,
-                    "subreddit": subreddit_name,
-                    "title": post.title,
-                    "score": post.score,
-                    "upvote_ratio": post.upvote_ratio,
-                    "num_comments": post.num_comments,
-                    "url": f"https://reddit.com{post.permalink}",
-                    "created_utc": datetime.fromtimestamp(
-                        post.created_utc, tz=timezone.utc
-                    ).isoformat(),
-                    "selftext": post.selftext[:5000] if post.selftext else "",
-                    "flair": post.link_flair_text,
-                    "post_types": classify_post_types(post.title, post.selftext or "", config),
-                    "extractions": {
-                        cat.key: extract_category(all_text, cat)
-                        for cat in config.extractions
-                    },
-                    "top_comments": top_comments,
-                })
-        except Exception as e:
-            console.print(f"  [dim]r/{subreddit_name}[/dim] query error: [red]{e}[/red]")
+                    results.append({
+                        "id": post.id,
+                        "subreddit": subreddit_name,
+                        "title": post.title,
+                        "score": post.score,
+                        "upvote_ratio": post.upvote_ratio,
+                        "num_comments": post.num_comments,
+                        "url": f"https://reddit.com{post.permalink}",
+                        "created_utc": datetime.fromtimestamp(
+                            post.created_utc, tz=timezone.utc
+                        ).isoformat(),
+                        "selftext": post.selftext[:5000] if post.selftext else "",
+                        "flair": post.link_flair_text,
+                        "post_types": classify_post_types(post.title, post.selftext or "", config),
+                        "extractions": {
+                            cat.key: extract_category(all_text, cat)
+                            for cat in config.extractions
+                        },
+                        "top_comments": top_comments,
+                    })
+                consecutive_429s = 0
+            except Exception as e:
+                if "429" in str(e):
+                    consecutive_429s += 1
+                    if consecutive_429s >= 2:
+                        pbar.set_postfix(found=len(results), status="rate-limited", refresh=True)
+                        tqdm.write(f"  r/{subreddit_name}: rate-limited (429), skipping remaining queries")
+                        break
+                else:
+                    tqdm.write(f"  r/{subreddit_name} query error: {e}")
 
-    console.print(f"  [dim]r/{subreddit_name}[/dim] → [bold]{len(results)}[/bold] posts")
     return results
 
 
@@ -518,16 +537,24 @@ def main() -> None:
     all_posts: list[dict] = []
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = {
-            executor.submit(scrape_subreddit, reddit, sub, config, args.limit, console): sub
-            for sub in config.subreddits
+            executor.submit(scrape_subreddit, reddit, sub, config, args.limit, i): sub
+            for i, sub in enumerate(config.subreddits)
         }
-        for future in as_completed(futures):
-            sub_name = futures[future]
-            try:
-                posts = future.result()
-                all_posts.extend(posts)
-            except Exception as e:
-                console.print(f"  [red]r/{sub_name} failed: {e}[/red]")
+        with tqdm(
+            total=len(futures),
+            desc=f"{'Overall':<26}",
+            position=len(config.subreddits),
+            unit="sub",
+            dynamic_ncols=True,
+        ) as overall:
+            for future in as_completed(futures):
+                sub_name = futures[future]
+                try:
+                    posts = future.result()
+                    all_posts.extend(posts)
+                except Exception as e:
+                    tqdm.write(f"r/{sub_name} failed: {e}")
+                overall.update(1)
 
     # Deduplicate across subreddits
     seen: set[str] = set()

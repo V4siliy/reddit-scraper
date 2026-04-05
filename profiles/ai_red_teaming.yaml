@@ -1,0 +1,236 @@
+name: "AI Red Teaming"
+description: "Jailbreaks, prompt injection, adversarial attacks, LLM safety evaluations, and red team findings"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 2
+
+subreddits:
+  - ChatGPTJailbreak
+  - artificial
+  - MachineLearning
+  - LocalLLaMA
+  - ClaudeAI
+  - netsec
+  - cybersecurity
+  - PromptEngineering
+  - openai
+  - AIJailbreak
+
+search_queries:
+  # Jailbreaks & bypasses
+  - "jailbreak LLM GPT Claude"
+  - "jailbreak prompt bypass"
+  - "DAN jailbreak"
+  - "jail break chatgpt"
+  - "bypassing AI safety filter"
+  - "bypass content policy LLM"
+  - "uncensored model jailbreak"
+  # Prompt injection
+  - "prompt injection attack"
+  - "indirect prompt injection"
+  - "prompt injection vulnerability"
+  - "LLM prompt injection exploit"
+  - "system prompt leak"
+  - "system prompt extraction"
+  # Adversarial & red teaming
+  - "red teaming LLM"
+  - "adversarial attack language model"
+  - "AI red team findings"
+  - "LLM adversarial examples"
+  - "model evaluation safety"
+  - "AI safety red team"
+  # Research & disclosures
+  - "LLM vulnerability disclosure"
+  - "AI model security research"
+  - "GPT vulnerability found"
+  - "Claude vulnerability"
+  - "AI safety evaluation benchmark"
+  # Techniques
+  - "many shot jailbreaking"
+  - "crescendo attack LLM"
+  - "skeleton key attack AI"
+  - "tree of attacks prompting"
+  - "PAIR jailbreak"
+  - "GCG attack suffix"
+  - "ASCII art jailbreak"
+  - "roleplay jailbreak"
+
+post_types:
+  jailbreak_demo:
+    - '\b(jailbreak(ed|ing)?|bypassed?|broke out of)\b'
+    - '\b(got (gpt|claude|gemini|llm) to|made (the )?(ai|model|llm) (say|generate|produce|write))\b'
+    - '\b(uncensored|unfiltered|without (restrictions|guardrails|safety))\b'
+  vulnerability_disclosure:
+    - '\b(found (a |an )?vulnerability|discovered (a |an )?bug|security (issue|flaw|bug))\b'
+    - '\b(CVE-|responsible disclosure|security advisory|poc exploit)\b'
+    - '\b(leaked? (system )?prompt|extracted? (the )?(system )?prompt)\b'
+  research_finding:
+    - '\b(paper|research|study|experiment|benchmark|evaluation)\b'
+    - '\b(we (found|show|demonstrate|propose)|our (method|approach|attack|defense))\b'
+    - '\b(arxiv|published|peer.?reviewed|accepted at)\b'
+  technique_discussion:
+    - '\b(technique|method|approach|strategy|vector)\b'
+    - '\b(how (to|I) (jailbreak|bypass|inject|manipulate))\b'
+    - '\b(works (against|on|with)|effective (against|on))\b'
+  defense_discussion:
+    - '\b(defense|mitigation|guardrail|safety filter|detection|prevention)\b'
+    - '\b(how to (detect|prevent|stop|block|mitigate))\b'
+    - '\b(red team|blue team|purple team)\b'
+
+extractions:
+  techniques:
+    display: "Attack Techniques"
+    terms:
+      prompt_injection:
+        name: "Prompt Injection"
+        patterns: ['\bprompt\s+injection\b', '\binjection\s+attack\b']
+      indirect_injection:
+        name: "Indirect Prompt Injection"
+        patterns: ['\bindirect\s+prompt\s+injection\b', '\bindirect\s+injection\b']
+      jailbreak:
+        name: "Jailbreak"
+        patterns: ['\bjailbreak\b']
+      dan:
+        name: "DAN / Persona Jailbreak"
+        patterns: ['\bDAN\b', '\bdo anything now\b', '\bpersona\s+(jailbreak|bypass)\b', '\broleplay\s+(jailbreak|attack|bypass)\b']
+      system_prompt_leak:
+        name: "System Prompt Extraction"
+        patterns: ['\bsystem\s+prompt\s+(leak|extract|stole?|dump|reveal)\b', '\bextract(ed|ing)?\s+(the\s+)?system\s+prompt\b']
+      adversarial_suffix:
+        name: "Adversarial Suffix / GCG"
+        patterns: ['\bgcg\b', '\badversarial\s+suffix\b', '\bgradient.based\s+attack\b']
+      many_shot:
+        name: "Many-Shot Jailbreaking"
+        patterns: ['\bmany.shot\b', '\bfew.shot\s+(jailbreak|attack)\b']
+      crescendo:
+        name: "Crescendo Attack"
+        patterns: ['\bcrescendo\b']
+      skeleton_key:
+        name: "Skeleton Key"
+        patterns: ['\bskeleton\s+key\b']
+      tree_of_attacks:
+        name: "Tree of Attacks (TAP)"
+        patterns: ['\btree\s+of\s+attacks\b', '\bTAP\b', '\bPAIR\b']
+      ascii_art:
+        name: "ASCII / Encoding Bypass"
+        patterns: ['\bASCII\s+(art|encoding|bypass)\b', '\bbase64\s+(jailbreak|bypass|encode)\b', '\bencoding\s+bypass\b']
+      data_poisoning:
+        name: "Data Poisoning"
+        patterns: ['\bdata\s+poison\w+\b', '\btraining\s+data\s+(attack|manipulat|poison)\b', '\bbackdoor\s+attack\b']
+      model_inversion:
+        name: "Model Inversion / Extraction"
+        patterns: ['\bmodel\s+(inversion|extraction|stealing?|theft)\b', '\bextract(ing|ed)?\s+(training\s+)?data\b']
+      rag_poisoning:
+        name: "RAG / Context Poisoning"
+        patterns: ['\bRAG\s+(poison|attack|inject)\b', '\bcontext\s+(poison|inject|manipulat)\b', '\bdocument\s+injection\b']
+
+  target_models:
+    display: "Models Targeted"
+    terms:
+      gpt4:
+        name: "GPT-4 / ChatGPT"
+        patterns: ['\bgpt-?4\b', '\bgpt-?4o\b', '\bchatgpt\b', '\bopenai\s+model\b']
+      gpt35:
+        name: "GPT-3.5"
+        patterns: ['\bgpt-?3\.?5\b']
+      claude:
+        name: "Claude (Anthropic)"
+        patterns: ['\bclaude\s*[23]?\b', '\bclaude\s+(opus|sonnet|haiku)\b']
+      gemini:
+        name: "Gemini (Google)"
+        patterns: ['\bgemini\s*(pro|ultra|flash)?\b']
+      llama:
+        name: "Llama / Meta"
+        patterns: ['\bllama\s*[23]?\b', '\bmeta\s+(llm|ai)\b']
+      mistral:
+        name: "Mistral"
+        patterns: ['\bmistral\b']
+      deepseek:
+        name: "DeepSeek"
+        patterns: ['\bdeepseek\b']
+      grok:
+        name: "Grok (xAI)"
+        patterns: ['\bgrok\b', '\bxai\b']
+      local_models:
+        name: "Local / Open-Source Models"
+        patterns: ['\blocal\s+model\b', '\bopen.?source\s+(llm|model)\b', '\bollama\b']
+      multimodal:
+        name: "Multimodal / Vision Models"
+        patterns: ['\bmultimodal\b', '\bvision\s+(model|llm)\b', '\bimage\s+(input|attack|injection)\b']
+
+  attack_goals:
+    display: "Attack Goals"
+    terms:
+      harmful_content:
+        name: "Harmful Content Generation"
+        patterns: ['\bharmful\s+(content|output|generat)\b', '\b(generate|produce|write)\s+(harmful|dangerous|illegal|explicit)\b']
+      data_exfiltration:
+        name: "Data Exfiltration"
+        patterns: ['\bdata\s+exfil\w*\b', '\bsteal\s+(data|information|credentials)\b', '\bexfiltrat\w+\b']
+      privilege_escalation:
+        name: "Privilege / Permission Bypass"
+        patterns: ['\bprivilege\s+escal\w+\b', '\bpermission\s+bypass\b', '\baccess\s+control\s+bypass\b']
+      agent_hijacking:
+        name: "AI Agent Hijacking"
+        patterns: ['\bagent\s+(hijack|takeover|manipulat)\b', '\bLLM\s+agent\s+(attack|exploit)\b', '\btool\s+(misuse|abuse)\b']
+      disinformation:
+        name: "Disinformation / Bias"
+        patterns: ['\bdisinformation\b', '\bmisinformation\b', '\bbias\s+(exploit|manipulat|inject)\b', '\bfabricate\b']
+      dos:
+        name: "Denial of Service / Resource Abuse"
+        patterns: ['\bDoS\b', '\btoken\s+(flood|bomb|attack)\b', '\bprompt\s+(bomb|flood)\b', '\bresource\s+abuse\b']
+
+  defenses:
+    display: "Defenses & Mitigations"
+    terms:
+      guardrails:
+        name: "Guardrails / Safety Filters"
+        patterns: ['\bguardrail\b', '\bsafety\s+filter\b', '\bcontent\s+filter\b', '\bmoderation\b']
+      rlhf:
+        name: "RLHF / Alignment"
+        patterns: ['\bRLHF\b', '\breinforcement\s+learning\s+from\s+human\b', '\balignment\b', '\bconstitutional\s+ai\b']
+      input_sanitization:
+        name: "Input Sanitization"
+        patterns: ['\binput\s+saniti\w+\b', '\bprompt\s+saniti\w+\b', '\bsanitiz\w+\s+(input|prompt)\b']
+      detection:
+        name: "Attack Detection"
+        patterns: ['\battack\s+detect\w+\b', '\bdetect\w+\s+(jailbreak|injection|attack)\b', '\banomaly\s+detect\w+\b']
+      red_teaming_framework:
+        name: "Red Teaming Frameworks"
+        patterns: ['\bred\s+team\w*\b', '\bPyRIT\b', '\bGarak\b', '\bHarmBench\b', '\bSTRONG\s+REJECT\b']
+      llm_firewall:
+        name: "LLM Firewall / Proxy"
+        patterns: ['\bllm\s+firewall\b', '\bai\s+firewall\b', '\bllm\s+proxy\b', '\blakeRA\b', '\brebuff\b']
+
+  organizations:
+    display: "Organizations & Research Groups"
+    terms:
+      anthropic:
+        name: "Anthropic"
+        patterns: ['\banthrop\w+\b']
+      openai:
+        name: "OpenAI"
+        patterns: ['\bopenai\b']
+      google_deepmind:
+        name: "Google DeepMind"
+        patterns: ['\bgoogle\s+deepmind\b', '\bdeepmind\b', '\bgoogle\s+ai\b']
+      microsoft:
+        name: "Microsoft"
+        patterns: ['\bmicrosoft\s+(ai|research|security)\b', '\bmsrc\b']
+      nist:
+        name: "NIST"
+        patterns: ['\bNIST\b', '\bnational\s+institute\s+of\s+standards\b']
+      mitre:
+        name: "MITRE ATLAS"
+        patterns: ['\bMITRE\b', '\bATLAS\b']
+      academia:
+        name: "Academic Research"
+        patterns: ['\buniversity\b', '\barxiv\b', '\bpaper\s+(by|from)\b', '\bresearch\s+group\b']
+
+notable_quotes:
+  min_score: 5
+  trigger_extractions:
+    - techniques
+    - defenses
+    - attack_goals

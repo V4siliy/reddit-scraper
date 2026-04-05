@@ -1,0 +1,221 @@
+name: "AI Security News"
+description: "AI-powered cyberattacks, LLM vulnerabilities, deepfakes, security tooling, and defensive AI"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 2
+
+subreddits:
+  - cybersecurity
+  - netsec
+  - artificial
+  - MachineLearning
+  - blueteamsec
+  - AskNetsec
+  - ReverseEngineering
+  - malware
+  - hacking
+  - technology
+
+search_queries:
+  # AI-powered attacks
+  - "AI powered cyberattack"
+  - "LLM used in attack"
+  - "AI malware phishing"
+  - "generative AI attack campaign"
+  - "AI generated phishing email"
+  - "deepfake fraud attack"
+  - "voice cloning fraud scam"
+  - "AI social engineering"
+  # LLM / AI system vulnerabilities
+  - "LLM vulnerability CVE"
+  - "AI model vulnerability"
+  - "machine learning security flaw"
+  - "AI API security issue"
+  - "RAG vulnerability attack"
+  - "LLM agent security"
+  - "AI agent exploit"
+  # Specific threat types
+  - "deepfake detection bypass"
+  - "AI generated malware"
+  - "autonomous AI hacking"
+  - "AI supply chain attack"
+  - "model poisoning attack"
+  - "adversarial machine learning"
+  # Defensive AI
+  - "AI threat detection security"
+  - "LLM security monitoring"
+  - "AI powered SOC"
+  - "machine learning intrusion detection"
+  - "AI vulnerability scanner"
+  - "AI penetration testing"
+  # News & incidents
+  - "AI security incident breach"
+  - "LLM data breach"
+  - "AI system compromised"
+  - "deepfake CEO fraud"
+  - "AI generated disinformation campaign"
+  # Research & tools
+  - "AI red team security research"
+  - "security AI tool release"
+  - "AI SIEM detection"
+  - "LLM security benchmark"
+
+post_types:
+  incident_report:
+    - '\b(breach|incident|attack|campaign|compromised?|hacked?|exploited?)\b'
+    - '\b(threat\s+actor|APT|nation.state|ransomware|malware)\b'
+    - '\b(in\s+the\s+wild|zero.day|active\s+exploit)\b'
+  vulnerability_disclosure:
+    - '\b(CVE-|vulnerability|security\s+(flaw|issue|bug|hole))\b'
+    - '\b(disclosure|responsible\s+disclosure|security\s+advisory|patch)\b'
+    - '\b(poc|proof.of.concept|exploit\s+(code|released?|published))\b'
+  research_paper:
+    - '\b(paper|research|study|arxiv|preprint|published)\b'
+    - '\b(we\s+(show|demonstrate|propose|present)|our\s+(method|approach|system))\b'
+    - '\b(accepted\s+at|peer.?reviewed|usenix|ccs|ndss|sp\s+202)\b'
+  tool_release:
+    - '\b(released?|launched?|open.sourced?|announcing)\b'
+    - '\b(new\s+(tool|framework|library|scanner|detector))\b'
+    - '\b(github\.com|open\s+source\s+security\s+tool)\b'
+  news_analysis:
+    - '\b(report|analysis|breakdown|deep.?dive|explained?)\b'
+    - '\b(according\s+to|researchers?\s+(found|discovered|revealed))\b'
+    - '\b(threat\s+(intelligence|report|landscape))\b'
+  defense_guide:
+    - '\b(how\s+to\s+(protect|defend|detect|prevent|mitigate))\b'
+    - '\b(best\s+practices?|security\s+(guide|checklist|tips?))\b'
+    - '\b(hardening|mitigation|playbook|runbook)\b'
+
+extractions:
+  attack_vectors:
+    display: "Attack Vectors"
+    terms:
+      ai_phishing:
+        name: "AI-Generated Phishing"
+        patterns: ['\bai.{0,10}(phishing|spear.?phish)\b', '\bgenerated?\s+phishing\b', '\bllm.{0,10}phishing\b']
+      deepfake_fraud:
+        name: "Deepfake / Voice Clone Fraud"
+        patterns: ['\bdeepfake\b', '\bvoice\s+clon\w+\b', '\bsynthetic\s+(voice|video|media)\b', '\baudio\s+deepfake\b']
+      prompt_injection:
+        name: "Prompt Injection"
+        patterns: ['\bprompt\s+injection\b']
+      ai_malware:
+        name: "AI-Generated Malware"
+        patterns: ['\bai.{0,10}(malware|ransomware|exploit)\b', '\bai.{0,10}(generated?|written?|created?)\s+(malware|code|shellcode)\b']
+      data_poisoning:
+        name: "Training Data Poisoning"
+        patterns: ['\bdata\s+poison\w+\b', '\btraining\s+data\s+attack\b', '\bbackdoor\b']
+      model_theft:
+        name: "Model Theft / Extraction"
+        patterns: ['\bmodel\s+(theft|stealing?|extraction)\b', '\bsteal\w*\s+(the\s+)?model\b']
+      supply_chain:
+        name: "AI Supply Chain Attack"
+        patterns: ['\bsupply\s+chain\s+attack\b', '\bmalicious\s+(model|weights?|package)\b', '\bhugging\s*face\s+(malware|attack)\b']
+      agent_hijacking:
+        name: "AI Agent Hijacking"
+        patterns: ['\bagent\s+(hijack|takeover|comprom)\b', '\bllm\s+agent\s+(attack|exploit)\b', '\bagentic\s+ai\s+attack\b']
+      adversarial_ml:
+        name: "Adversarial ML / Evasion"
+        patterns: ['\badversarial\s+(example|input|patch|perturbation)\b', '\bmodel\s+evasion\b', '\bml\s+(evasion|bypass)\b']
+      social_engineering:
+        name: "AI Social Engineering"
+        patterns: ['\bai.{0,10}social\s+engineering\b', '\bai.{0,10}(vishing|smishing)\b', '\bauto\w*\s+social\s+engineering\b']
+
+  threat_types:
+    display: "Threat Types"
+    terms:
+      ransomware:
+        name: "Ransomware"
+        patterns: ['\bransomware\b']
+      apt:
+        name: "APT / Nation-State"
+        patterns: ['\bAPT\b', '\bnation.state\b', '\bstate.sponsored\b', '\bthreat\s+actor\b']
+      fraud:
+        name: "Financial Fraud / BEC"
+        patterns: ['\bfraud\b', '\bBEC\b', '\bbusiness\s+email\s+compromise\b', '\bfinancial\s+scam\b', '\bdeepfake\s+(ceo|fraud)\b']
+      disinformation:
+        name: "Disinformation / FIMI"
+        patterns: ['\bdisinformation\b', '\bmisinformation\b', '\bFIMI\b', '\binfluence\s+operation\b', '\bsynthetic\s+media\s+campaign\b']
+      data_breach:
+        name: "Data Breach / Exfiltration"
+        patterns: ['\bdata\s+breach\b', '\bdata\s+exfil\w+\b', '\bpii\s+(leak|breach|exfil)\b']
+      ddos:
+        name: "DDoS / Infrastructure"
+        patterns: ['\bDDoS\b', '\bdenial.of.service\b', '\binfrastructure\s+attack\b']
+      insider_threat:
+        name: "Insider Threat"
+        patterns: ['\binsider\s+threat\b', '\bmalicious\s+insider\b']
+
+  ai_security_tools:
+    display: "AI Security Tools"
+    terms:
+      offensive_ai:
+        name: "Offensive AI Tools"
+        patterns: ['\b(pentest|red\s+team)\s+(ai|llm)\s+tool\b', '\bwormgpt\b', '\bfraudgpt\b', '\bpassgpt\b', '\bgenerative\s+ai\s+(pentest|attack)\b']
+      siem_ai:
+        name: "AI-Powered SIEM / SOC"
+        patterns: ['\bai.{0,10}SIEM\b', '\bai.{0,10}SOC\b', '\bai.{0,10}(threat\s+detect|anomaly)\b', '\bai.{0,10}(security\s+operat)\b']
+      vulnerability_scanner:
+        name: "AI Vulnerability Scanner"
+        patterns: ['\bai.{0,10}(vuln\w*\s+scan|pentest)\b', '\bai.{0,10}(code\s+scan|SAST|DAST)\b']
+      malware_analysis:
+        name: "AI Malware Analysis"
+        patterns: ['\bai.{0,10}malware\s+analysis\b', '\bml.{0,10}malware\s+detect\w+\b']
+      deepfake_detection:
+        name: "Deepfake Detection"
+        patterns: ['\bdeepfake\s+detect\w+\b', '\bsynthetic\s+media\s+detect\w+\b', '\bai\s+generat\w+\s+detect\w+\b']
+      llm_firewall:
+        name: "LLM Firewall / Gateway"
+        patterns: ['\bllm\s+(firewall|gateway|proxy|guard)\b', '\bai\s+(firewall|gateway)\b', '\bPromptArmor\b', '\bRebuff\b', '\bLakera\b']
+      threat_intel:
+        name: "AI Threat Intelligence"
+        patterns: ['\bai.{0,10}threat\s+intel\w*\b', '\bllm.{0,10}threat\s+intel\w*\b', '\bauto\w*\s+threat\s+intel\w*\b']
+
+  affected_sectors:
+    display: "Affected Sectors"
+    terms:
+      finance:
+        name: "Finance / Banking"
+        patterns: ['\b(bank|financial\s+institution|fintech|payment\s+system)\b']
+      healthcare:
+        name: "Healthcare"
+        patterns: ['\b(hospital|healthcare|medical\s+(record|system|device))\b']
+      critical_infra:
+        name: "Critical Infrastructure"
+        patterns: ['\bcritical\s+infrastructure\b', '\bpower\s+(grid|plant)\b', '\bICS\b', '\bSCADA\b', '\bOT\s+security\b']
+      government:
+        name: "Government / Defense"
+        patterns: ['\bgovernment\b', '\bdefense\s+(system|contractor)\b', '\bmilitary\b', '\bnational\s+security\b']
+      enterprise:
+        name: "Enterprise / Corporate"
+        patterns: ['\benterp\w+\b', '\bcorporate\s+(network|system)\b', '\bfortune\s+500\b']
+      cloud:
+        name: "Cloud / SaaS"
+        patterns: ['\bcloud\s+(security|attack|breach)\b', '\bSaaS\s+(security|attack)\b', '\bcloud\s+provider\b']
+
+  regulations:
+    display: "Regulations & Frameworks"
+    terms:
+      eu_ai_act:
+        name: "EU AI Act"
+        patterns: ['\bEU\s+AI\s+Act\b', '\beuropean\s+ai\s+act\b']
+      nist_ai:
+        name: "NIST AI RMF"
+        patterns: ['\bNIST\s+AI\b', '\bai\s+risk\s+management\s+framework\b', '\bNIST\s+RMF\b']
+      mitre_atlas:
+        name: "MITRE ATLAS"
+        patterns: ['\bMITRE\s+ATLAS\b', '\bATLAS\s+(tactic|technique|matrix)\b']
+      owasp_llm:
+        name: "OWASP LLM Top 10"
+        patterns: ['\bOWASP\s+LLM\b', '\bLLM\s+top\s+10\b', '\bOWASP\s+top\s+10\s+(llm|ai)\b']
+      iso_42001:
+        name: "ISO 42001"
+        patterns: ['\bISO\s*42001\b', '\biso\s+ai\s+management\b']
+
+notable_quotes:
+  min_score: 5
+  trigger_extractions:
+    - attack_vectors
+    - ai_security_tools
+    - threat_types

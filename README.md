@@ -63,6 +63,32 @@ Each run produces a uniquely named pair of files (timestamp + 6-char hex, e.g. `
 - **`results_<run_id>.json`** — ranked tables for each extraction category, top 30 posts, and notable quotes
 - **`raw_posts_<run_id>.json`** — full post data with all extracted fields per post
 
+## Generating an EPUB
+
+Convert any scrape run into a magazine-style EPUB for e-ink reading:
+
+```bash
+# Auto-use the most recent results
+uv run epub.py --latest
+
+# Explicit files
+uv run epub.py results_20260405_143022_abc.json raw_posts_20260405_143022_abc.json
+
+# Custom output name
+uv run epub.py --latest --output my_digest.epub
+```
+
+Output: `digest_<run_id>.epub` — a structured magazine with:
+- **Cover** — profile name, date, headline stats
+- **At a Glance** — quick summary of post types and top findings
+- **Feature Stories** — 6 top posts as full articles, with comments
+- **Launch Stories** — digest of new project launches
+- **Getting First Users** — acquisition stories
+- **Built with AI** — AI-assisted project posts
+- **Notable Quotes** — highest-scored community comments
+- **By the Numbers** — full ranked tables for all extraction categories
+- **More Stories** — remaining top posts, brief format
+
 ## Profiles
 
 Profiles live in `profiles/` and are auto-discovered at startup.
