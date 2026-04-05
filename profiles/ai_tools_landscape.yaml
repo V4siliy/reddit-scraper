@@ -1,0 +1,215 @@
+name: "AI Coding Tools Landscape"
+description: "Developer discussions about AI coding tools — comparisons, reviews, and real-world experiences"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 2
+
+subreddits:
+  - ChatGPTCoding
+  - ClaudeAI
+  - cursor
+  - artificial
+  - programming
+  - webdev
+  - learnprogramming
+  - ExperiencedDevs
+  - MachineLearning
+  - LocalLLaMA
+
+search_queries:
+  # Tool comparisons
+  - "cursor vs claude code"
+  - "copilot vs cursor"
+  - "best AI coding tool"
+  - "AI coding assistant comparison"
+  - "switched from cursor to"
+  - "switched from copilot to"
+  - "which AI coding tool"
+  # Experiences & reviews
+  - "claude code review experience"
+  - "cursor review 2026"
+  - "copilot review worth it"
+  - "windsurf review"
+  - "AI pair programmer experience"
+  - "vibe coding experience"
+  # Productivity & workflow
+  - "AI coding workflow productivity"
+  - "AI wrote entire codebase"
+  - "100% AI generated code"
+  - "coding with AI assistant daily"
+  - "AI coding tool workflow tips"
+  # Complaints / issues
+  - "AI coding tool problems issues"
+  - "cursor stopped working"
+  - "claude code limitations"
+  - "copilot bad suggestions"
+  # Specific tools
+  - "claude code tips tricks"
+  - "cursor tips productivity"
+  - "aider coding workflow"
+  - "cline vs cursor"
+  - "bolt.new experience"
+  - "lovable dev experience"
+  - "devin AI review"
+  # Use cases
+  - "refactoring with AI assistant"
+  - "debugging with AI tools"
+  - "AI code review workflow"
+  - "test generation AI tools"
+
+post_types:
+  tool_review:
+    - '\b(review|reviewed|reviewing)\b'
+    - '\b(my experience with|after (using|trying|testing))\b'
+    - '\b(honest (review|opinion|take)|thoughts on)\b'
+    - '\b(tried|tested|evaluated)\s+\w+\s+(for|over|after)\b'
+    - '\b(first (week|month|day) (with|using))\b'
+  comparison:
+    - '\b(vs\.?|versus|compared? to|comparison)\b'
+    - '\b(better than|worse than|prefer|switched (from|to))\b'
+    - '\b(which (is|one|tool) (is |should I |do you )?better)\b'
+    - '\b(pros and cons|advantages|disadvantages)\b'
+    - '\b(moved? (from|away from|to)|migrat\w+)\b'
+  experience_report:
+    - '\b(my workflow|how I use|the way I)\b'
+    - '\b(built (a|an|my|the) \w+ (app|project|tool|service) (with|using))\b'
+    - '\b(used AI (to|for)|AI (helped?|wrote|generated?|coded?))\b'
+    - '\b(story|journey|process) (of|behind) (building|creating|making)\b'
+    - '\b(lessons? learned|what I (learned|found|discovered))\b'
+  tip_or_trick:
+    - '\b(tip|trick|hack|pro tip)\b'
+    - '\b(how to (get|make|use|improve))\b'
+    - '\b(prompt(ing)? (tip|trick|technique|strategy))\b'
+    - '\b(workflow improvement|productivity boost|better results)\b'
+  complaint_or_issue:
+    - '\b(broken|stopped working|regressed?|got worse)\b'
+    - '\b(disappointed|frustrat\w+|annoying|useless|terrible)\b'
+    - '\b(bug|issue|problem|glitch)\s+with\b'
+    - '\b(not worth|waste of money|cancell\w+ subscription)\b'
+
+extractions:
+  ai_tools:
+    display: "AI Tools Discussed"
+    terms:
+      claude_code:
+        name: "Claude Code"
+        patterns: ['\bclaude\s+code\b']
+      cursor:
+        name: "Cursor"
+        patterns: ['\bcursor\s*(ide|ai|editor)?\b']
+      copilot:
+        name: "GitHub Copilot"
+        patterns: ['\b(?:github\s+)?copilot\b']
+      windsurf:
+        name: "Windsurf"
+        patterns: ['\bwindsurf\b']
+      cline:
+        name: "Cline"
+        patterns: ['\bcline\b']
+      aider:
+        name: "Aider"
+        patterns: ['\baider\b']
+      chatgpt:
+        name: "ChatGPT"
+        patterns: ['\bchatgpt\b']
+      bolt:
+        name: "Bolt.new"
+        patterns: ['\bbolt\.new\b', '\bbolt\s+(ai|new)\b']
+      v0:
+        name: "v0 by Vercel"
+        patterns: ['\bv0(?:\.dev)?\b']
+      lovable:
+        name: "Lovable"
+        patterns: ['\blovable(?:\.dev)?\b']
+      replit:
+        name: "Replit AI"
+        patterns: ['\breplit\b']
+      devin:
+        name: "Devin"
+        patterns: ['\bdevin\b']
+      continue_dev:
+        name: "Continue.dev"
+        patterns: ['\bcontinue(?:\.dev)?\b']
+      supermaven:
+        name: "Supermaven"
+        patterns: ['\bsupermaven\b']
+      tabnine:
+        name: "Tabnine"
+        patterns: ['\btabnine\b']
+
+  use_cases:
+    display: "Use Cases"
+    terms:
+      refactoring:
+        name: "Refactoring"
+        patterns: ['\brefactor\w*\b', '\brestructur\w+\b', '\bclean(ing)?\s+up\s+code\b']
+      debugging:
+        name: "Debugging"
+        patterns: ['\bdebugg\w+\b', '\bfix(ing)?\s+(a\s+)?bug\b', '\berror\s+(fixing|resolution)\b']
+      test_generation:
+        name: "Test generation"
+        patterns: ['\b(writ|generat)\w+\s+tests?\b', '\bunit\s+tests?\b', '\btest\s+(coverage|suite|generation)\b']
+      code_review:
+        name: "Code review"
+        patterns: ['\bcode\s+review\b', '\breviewing\s+code\b', '\bai\s+(review|reviewer)\b']
+      boilerplate:
+        name: "Boilerplate / scaffolding"
+        patterns: ['\bboilerplate\b', '\bscaffold\w*\b', '\bproject\s+setup\b', '\bstarter\s+(template|code)\b']
+      full_app:
+        name: "Full app generation"
+        patterns: ['\b(entire|whole|full)\s+(app|codebase|project)\b', '\b(built|wrote|generated?)\s+(a|an|the)\s+(complete|full|entire)\b', '\bvibe\s*cod\w+\b']
+      documentation:
+        name: "Documentation"
+        patterns: ['\bdoc(umentation|string|comment)\w*\b', '\bwrit\w+\s+docs?\b', '\breadme\b']
+      architecture:
+        name: "Architecture / design"
+        patterns: ['\barchitect\w*\b', '\bsystem\s+design\b', '\bcode\s+structure\b', '\bdesign\s+pattern\b']
+      autocomplete:
+        name: "Autocomplete / inline"
+        patterns: ['\bautocomplete\b', '\binline\s+(suggestion|completion)\b', '\btab\s+completion\b', '\bcode\s+completion\b']
+
+  sentiment:
+    display: "Sentiment"
+    terms:
+      positive:
+        name: "Positive"
+        patterns: ['\b(amazing|love|excellent|great|fantastic|awesome|impressive|game.?changer|10x)\b', '\b(highly recommend|best tool|productivity (boost|increase))\b']
+      negative:
+        name: "Negative / critical"
+        patterns: ['\b(terrible|awful|useless|disappointing|overrated|broken|garbage|trash)\b', '\b(not worth|waste of|cancel(l?ed|ling))\b', '\b(got worse|regressed?|downgraded?)\b']
+      mixed:
+        name: "Mixed / nuanced"
+        patterns: ['\b(but|however|although|despite|except|caveat|limitation|downside)\b', '\b(good but|great but|nice but|useful but)\b', '\b(pros.+cons|cons.+pros)\b']
+
+  underlying_models:
+    display: "Underlying AI Models"
+    terms:
+      gpt4:
+        name: "GPT-4 / OpenAI"
+        patterns: ['\bgpt-?4\b', '\bgpt-?4o\b', '\bopenai\b']
+      claude:
+        name: "Claude (Anthropic)"
+        patterns: ['\bclaude\s+(3|3\.5|3\.7|opus|sonnet|haiku)\b', '\banthrop\w+\s+(model|api)\b']
+      gemini:
+        name: "Gemini (Google)"
+        patterns: ['\bgemini\s+(pro|ultra|flash|2)?\b', '\bgoogle\s+(ai|deepmind)\b']
+      mistral:
+        name: "Mistral"
+        patterns: ['\bmistral\b']
+      llama:
+        name: "Llama (Meta)"
+        patterns: ['\bllama\s*[23]?\b', '\bmeta\s+(ai|llm)\b']
+      deepseek:
+        name: "DeepSeek"
+        patterns: ['\bdeepseek\b']
+      local_model:
+        name: "Local / self-hosted"
+        patterns: ['\blocal\s+(model|llm|inference)\b', '\bself.?host\w+\s+(model|llm)\b', '\bollama\b', '\brun\s+(locally|on.?prem)\b']
+
+notable_quotes:
+  min_score: 5
+  trigger_extractions:
+    - ai_tools
+    - use_cases
+    - sentiment

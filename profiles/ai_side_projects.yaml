@@ -1,0 +1,364 @@
+name: "AI-Assisted Side Projects"
+description: "Side project launches, first-user stories, and tech stacks built with AI coding tools"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 1
+
+subreddits:
+  - SideProject
+  - indiehackers
+  - SaaS
+  - microsaas
+  - IMadeThis
+  - buildinpublic
+  - entrepreneurridealong
+  - startups
+  - webdev
+  - programming
+  - ChatGPTCoding
+  - ClaudeAI
+  - cursor
+  - artificial
+
+search_queries:
+  # Building with AI tools
+  - "built with AI side project"
+  - "built with cursor side project"
+  - "built with claude code"
+  - "AI assisted side project launched"
+  - "vibe coding project launched"
+  - "shipped side project AI"
+  - "built app using AI"
+  # First users / traction
+  - "side project first users"
+  - "side project first customers"
+  - "indie project first paying user"
+  - "launched side project how got users"
+  - "product hunt launch side project"
+  - "show HN side project AI"
+  - "side project 100 users"
+  - "first 10 customers side project"
+  # Problem / niche
+  - "solved problem side project"
+  - "scratching my own itch project"
+  - "built tool for myself side project"
+  - "pet project turned startup"
+  - "solo founder launched"
+  # Tech stack signals
+  - "side project nextjs supabase launched"
+  - "side project python fastapi launched"
+  - "side project react launched users"
+  - "built SaaS side project AI coding"
+
+post_types:
+  launch_story:
+    - '\b(just launched|just shipped|just released|just published|just deployed)\b'
+    - '\b(launched (my|our|a)|shipped (my|our|a)|released (my|our|a))\b'
+    - '\b(show hn|show reddit|check out my|presenting my)\b'
+    - '\b(went live|hit production|in production now|live now)\b'
+    - '\b(v1|version 1|first version|initial release|public beta)\b'
+  first_users:
+    - '\b(first (user|customer|sign.?up|subscriber|paying))\b'
+    - '\b(got (my|our|the) first (user|customer|sign.?up|subscriber|paying|sale|revenue))\b'
+    - '\b(how (i|we|to) (got|get|find|found) (first|early|initial) (user|customer))\b'
+    - '\b(user acquisition|early adopter|beta (user|tester))\b'
+    - '\b(\d+\s*(user|customer|sign.?up|subscriber)s? (in|within|after|on))\b'
+    - '\b(first \$\d+|first sale|first paying)\b'
+    - '\b(product hunt|show hn|launched on)\b'
+  paid_users:
+    - '\b(paying (user|customer)|paid (user|customer|subscriber|plan))\b'
+    - '\b(mrr|arr|monthly recurring|annual recurring)\b'
+    - '\b(\$\d+\s*(mrr|arr|\/mo|per month|\/month|a month))\b'
+    - '\b(first \$|made (my first|\$)|revenue|profit|monetiz)\b'
+    - '\b(stripe|lemon squeezy|paddle)\s+(dashboard|payment|charge)\b'
+  problem_fit:
+    - '\b(scratch(ing)? (my|our|your) (own )?itch)\b'
+    - '\b(built (it|this|the tool|the app) (because|to|for|since))\b'
+    - '\b(problem (i|we) (had|faced|struggled with|ran into))\b'
+    - '\b(frustrat\w+ (with|by|at) (existing|current))\b'
+    - '\b(no (good|existing|decent|affordable) (tool|solution|app|service) (for|that))\b'
+    - '\b(pain point|problem space|market gap|underserved)\b'
+  ai_assisted:
+    - '\b(built (with|using|via) (ai|llm|claude|gpt|cursor|copilot))\b'
+    - '\b(ai.?(assisted|powered|generated|written|helped?|coded?))\b'
+    - '\b(vibe.?cod(e|ing|ed))\b'
+    - '\b(cursor|claude code|copilot|windsurf|cline|aider|bolt|v0|lovable)\s+(built|wrote|helped?|generated?|coded?)\b'
+    - '\b(wrote (the )?(entire |whole )?(app|codebase|backend|frontend) with (ai|llm|claude|gpt|cursor))\b'
+    - '\b(100%\s*(ai|llm).?(generated|written|coded))\b'
+    - '\b(no.?code(r)?|low.?code)\b'
+
+extractions:
+  ai_tools:
+    display: "AI Coding Tools"
+    terms:
+      claude_code:
+        name: "Claude Code"
+        patterns: ['\bclaude\s+code\b']
+      cursor:
+        name: "Cursor"
+        patterns: ['\bcursor\s*(ide|ai|editor)?\b', '\bbuilt\s+(with|using)\s+cursor\b']
+      copilot:
+        name: "GitHub Copilot"
+        patterns: ['\b(?:github\s+)?copilot\b']
+      windsurf:
+        name: "Windsurf"
+        patterns: ['\bwindsurf\b']
+      cline:
+        name: "Cline"
+        patterns: ['\bcline\b']
+      aider:
+        name: "Aider"
+        patterns: ['\baider\b']
+      chatgpt:
+        name: "ChatGPT"
+        patterns: ['\bchatgpt\b']
+      bolt:
+        name: "Bolt.new"
+        patterns: ['\bbolt\.new\b', '\bbolt\s+(ai|new)\b']
+      v0:
+        name: "v0 by Vercel"
+        patterns: ['\bv0(?:\.dev)?\b']
+      lovable:
+        name: "Lovable"
+        patterns: ['\blovable(?:\.dev)?\b']
+      replit:
+        name: "Replit AI"
+        patterns: ['\breplit\b']
+      devin:
+        name: "Devin"
+        patterns: ['\bdevin\b']
+
+  tech_stack:
+    display: "Tech Stack"
+    terms:
+      nextjs:
+        name: "Next.js"
+        patterns: ['\bnext\.?js\b']
+      react:
+        name: "React"
+        patterns: ['\breact\b(?!\s+native)']
+      vue:
+        name: "Vue"
+        patterns: ['\bvue\.?(?:js)?\b']
+      svelte:
+        name: "Svelte"
+        patterns: ['\bsvelte(?:kit)?\b']
+      tailwind:
+        name: "Tailwind CSS"
+        patterns: ['\btailwind\b']
+      shadcn:
+        name: "shadcn/ui"
+        patterns: ['\bshadcn\b']
+      typescript:
+        name: "TypeScript"
+        patterns: ['\btypescript\b']
+      fastapi:
+        name: "FastAPI"
+        patterns: ['\bfastapi\b']
+      django:
+        name: "Django"
+        patterns: ['\bdjango\b']
+      flask:
+        name: "Flask"
+        patterns: ['\bflask\b']
+      nodejs:
+        name: "Node.js"
+        patterns: ['\bnode\.?js\b']
+      express:
+        name: "Express"
+        patterns: ['\bexpress(?:\.js)?\b']
+      golang:
+        name: "Go"
+        patterns: ['\bgolang\b', '\bgo\s+(?:lang|server|api|backend|service)\b']
+      rust:
+        name: "Rust"
+        patterns: ['\brust(?:lang)?\b']
+      rails:
+        name: "Ruby on Rails"
+        patterns: ['\bruby on rails\b', '\brails\b']
+      laravel:
+        name: "Laravel"
+        patterns: ['\blaravel\b']
+      supabase:
+        name: "Supabase"
+        patterns: ['\bsupabase\b']
+      postgresql:
+        name: "PostgreSQL"
+        patterns: ['\bpostgres(?:ql)?\b']
+      mongodb:
+        name: "MongoDB"
+        patterns: ['\bmongodb\b', '\bmongo\b']
+      sqlite:
+        name: "SQLite"
+        patterns: ['\bsqlite\b']
+      redis:
+        name: "Redis"
+        patterns: ['\bredis\b']
+      neon:
+        name: "Neon"
+        patterns: ['\bneon(?:\s*db)?\b']
+      prisma:
+        name: "Prisma"
+        patterns: ['\bprisma\b']
+      drizzle:
+        name: "Drizzle ORM"
+        patterns: ['\bdrizzle\b']
+      firebase:
+        name: "Firebase"
+        patterns: ['\bfirebase\b']
+      pocketbase:
+        name: "PocketBase"
+        patterns: ['\bpocketbase\b']
+      openai_api:
+        name: "OpenAI API"
+        patterns: ['\bopenai\b', '\bgpt-?[34o]\b']
+      anthropic_api:
+        name: "Anthropic API"
+        patterns: ['\banthrop\w+\s+api\b', '\bclaude\s+api\b', '\bclaude\s+(?:3|3\.5|haiku|sonnet|opus)\b']
+      gemini_api:
+        name: "Gemini API"
+        patterns: ['\bgemini\b']
+      langchain:
+        name: "LangChain"
+        patterns: ['\blangchain\b']
+      ollama:
+        name: "Ollama"
+        patterns: ['\bollama\b']
+      rag:
+        name: "RAG"
+        patterns: ['\brag\b', '\bretrieval.augmented\b']
+      pinecone:
+        name: "Pinecone"
+        patterns: ['\bpinecone\b']
+      vercel:
+        name: "Vercel"
+        patterns: ['\bvercel\b']
+      railway:
+        name: "Railway"
+        patterns: ['\brailway\b']
+      flyio:
+        name: "Fly.io"
+        patterns: ['\bfly\.io\b']
+      cloudflare:
+        name: "Cloudflare"
+        patterns: ['\bcloudflare\b']
+      aws:
+        name: "AWS"
+        patterns: ['\baws\b', '\bamazon web services\b']
+      gcp:
+        name: "GCP"
+        patterns: ['\bgcp\b', '\bgoogle cloud\b']
+      render:
+        name: "Render"
+        patterns: ['\brender\.com\b']
+      clerk:
+        name: "Clerk"
+        patterns: ['\bclerk(?:\.dev)?\b']
+      stripe:
+        name: "Stripe"
+        patterns: ['\bstripe\b']
+      lemon_squeezy:
+        name: "Lemon Squeezy"
+        patterns: ['\blemon\s*squeezy\b']
+      react_native:
+        name: "React Native"
+        patterns: ['\breact\s+native\b']
+      flutter:
+        name: "Flutter"
+        patterns: ['\bflutter\b']
+      swift:
+        name: "Swift/iOS"
+        patterns: ['\bswiftui?\b']
+
+  acquisition:
+    display: "How They Got First Users"
+    terms:
+      product_hunt:
+        name: "Product Hunt"
+        patterns: ['\bproduct\s+hunt\b', '\b#\d+\s+on\s+ph\b', '\bph\s+launch\b']
+      hacker_news:
+        name: "Hacker News"
+        patterns: ['\bhacker\s+news\b', '\bshow\s+hn\b', '\bhn\b']
+      reddit:
+        name: "Reddit"
+        patterns: ['\bposted?\s+(?:on|to)\s+reddit\b', '\breddit\s+post\b', '\br/\w+\b']
+      twitter_x:
+        name: "Twitter/X"
+        patterns: ['\btwitter\b', '\bx\.com\b', '\btweeted?\b', '\bx\s+(post|thread)\b']
+      linkedin:
+        name: "LinkedIn"
+        patterns: ['\blinkedin\b']
+      cold_outreach:
+        name: "Cold outreach"
+        patterns: ['\bcold\s+(email|dm|outreach|message|pitch)\b']
+      seo:
+        name: "SEO / organic"
+        patterns: ['\bseo\b', '\borganic\s+(traffic|search|growth|users?)\b']
+      word_of_mouth:
+        name: "Word of mouth"
+        patterns: ['\bword\s+of\s+mouth\b', '\bfriend(?:s)?\s+(and|or|told|shared)\b', '\btold\s+(my|a)\s+friend\b']
+      communities:
+        name: "Communities/Discord"
+        patterns: ['\bdiscord\b', '\bslack\s+(community|group|channel)\b', '\bonline\s+community\b']
+      youtube:
+        name: "YouTube"
+        patterns: ['\byoutube\b']
+      tiktok:
+        name: "TikTok"
+        patterns: ['\btiktok\b']
+      app_stores:
+        name: "App stores"
+        patterns: ['\bapp\s+store\b', '\bgoogle\s+play\b']
+      direct_sales:
+        name: "Direct / sales"
+        patterns: ['\bcold\s+call\b', '\bsales\s+call\b', '\bdemo\s+call\b', '\boutbound\b']
+      newsletters:
+        name: "Newsletter"
+        patterns: ['\bnewsletter\b', '\bemail\s+list\b', '\bsubstack\b']
+
+  domains:
+    display: "Problem Domains"
+    terms:
+      devtools:
+        name: "Dev tools"
+        patterns: ['\b(developer|dev)\s+tool\b', '\bci/cd\b', '\bdebugg\w+\b', '\bapi\s+(tool|test|monitor)\b', '\bcode\s+review\b']
+      productivity:
+        name: "Productivity"
+        patterns: ['\bproductivity\b', '\btask\s+(manager|management|tracker)\b', '\bto-?do\b', '\bplanner\b', '\btime\s+tracking\b']
+      content_ai:
+        name: "Content / AI writing"
+        patterns: ['\bcontent\s+(generat|creat|writ)\w+\b', '\bai\s+(writ|generat|content)\w+\b', '\bcopywriting\b']
+      finance:
+        name: "Finance / fintech"
+        patterns: ['\bfinance\b', '\bbudget\w*\b', '\bexpense\s+track\w+\b', '\baccounting\b', '\bfintech\b']
+      health:
+        name: "Health / fitness"
+        patterns: ['\bhealth\b', '\bfitness\b', '\bwellness\b', '\bworkout\b', '\bdiet\b', '\bmental\s+health\b']
+      education:
+        name: "Education"
+        patterns: ['\beducat\w+\b', '\blearn\w+\s+platform\b', '\btutor\w*\b', '\bcourse\b', '\bflashcard\b']
+      ecommerce:
+        name: "E-commerce"
+        patterns: ['\becommerce\b', '\be-commerce\b', '\bshopify\b', '\bstore\b', '\bproduct\s+listing\b']
+      marketing:
+        name: "Marketing"
+        patterns: ['\bmarketing\b', '\blead\s+gen\w*\b', '\bcrm\b', '\boutreach\b', '\bcold\s+email\s+tool\b']
+      social:
+        name: "Social / community"
+        patterns: ['\bsocial\b', '\bcommunity\s+(platform|tool|builder)\b', '\bforum\b', '\bchat\s+(app|tool|platform)\b']
+      automation:
+        name: "Automation"
+        patterns: ['\bautomation\b', '\bworkflow\s+automat\w+\b', '\bno.?code\s+automat\w+\b', '\bscrap\w+\b', '\bbot\b']
+      analytics:
+        name: "Analytics / data"
+        patterns: ['\banalytics\b', '\bdashboard\b', '\bdata\s+(pipeline|viz|tool)\b', '\bmonitoring\b']
+      ai_wrapper:
+        name: "AI wrapper / app"
+        patterns: ['\bai\s+(wrapper|app|assistant|chatbot|agent)\b', '\bllm\s+(app|tool|wrapper)\b', '\bchatbot\b']
+
+notable_quotes:
+  min_score: 3
+  trigger_extractions:
+    - ai_tools
+    - acquisition
