@@ -1,0 +1,277 @@
+name: "Pain Points & Niche Hunt"
+description: "User frustrations, manual workarounds, and unmet needs — raw material for low-hanging-fruit products"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 1
+
+subreddits:
+  - smallbusiness
+  - entrepreneur
+  - freelance
+  - Etsy
+  - selfemployed
+  - EntrepreneurRideAlong
+  - SideProject
+  - startups
+  - nocode
+  - productivity
+  - Accounting
+  - legaladvice
+  - realtors
+  - photography
+  - graphic_design
+
+search_queries:
+  # Classic "wish this existed" signals
+  - "I wish there was a tool"
+  - "why doesn't a tool exist for"
+  - "I can't believe there's no app for"
+  - "does anyone know a simple tool"
+  - "is there a cheap tool that just"
+  - "looking for something that only does"
+  - "all I need is something that"
+  # Manual pain signals
+  - "I do this manually every week"
+  - "I spend hours doing this manually"
+  - "still doing this in a spreadsheet"
+  - "copy pasting every single time"
+  - "manually entering data every"
+  - "doing it by hand takes forever"
+  - "there has to be a better way"
+  # Cost / complexity pain
+  - "too expensive for small business"
+  - "can't afford the software"
+  - "overkill for what I need"
+  - "way too complicated just to"
+  - "enterprise pricing but I'm just"
+  - "priced out of the tool I need"
+  - "the free plan is useless and paid is too much"
+  # Built to scratch own itch
+  - "I built this because no tool"
+  - "scratching my own itch"
+  - "made this for myself now selling"
+  - "solved my own problem now"
+  - "built it after getting frustrated"
+  # Specific small-business pain patterns
+  - "small business owner frustrated workflow"
+  - "freelancer invoice client pain"
+  - "solo founder doing everything manually"
+  - "overwhelmed with admin tasks small business"
+  - "client management nightmare freelance"
+  # Gap signals
+  - "no tool does exactly this"
+  - "market gap I noticed"
+  - "niche that nobody serves"
+  - "underserved market idea"
+  - "nobody has built this yet"
+
+post_types:
+  wish_exists:
+    - '\b(i\s+wish\s+(there\s+was|someone\s+would\s+build|there\s+were))\b'
+    - '\b(why\s+(doesn.t|isn.t\s+there|has\s+nobody)\s+(a\s+tool|an\s+app|software))\b'
+    - '\b(can.t\s+believe\s+there.s\s+no|hard\s+to\s+believe\s+there.s\s+no)\b'
+    - '\b(someone\s+should\s+build|needs?\s+to\s+exist|should\s+exist)\b'
+    - '\b(dream\s+(tool|product|app|feature)|perfect\s+tool\s+would)\b'
+  pain_point:
+    - '\b(so\s+frustrat\w+|drives?\s+me\s+crazy|hate\s+that\s+I\s+have\s+to)\b'
+    - '\b(pain\s+in\s+the|biggest\s+pain\s+point|major\s+pain\s+point)\b'
+    - '\b(nightmare|headache|horrible|terrible)\s+(to|when|every\s+time)\b'
+    - '\b(wast(e|ing)\s+(so\s+much\s+)?time|time.?consuming|takes?\s+forever)\b'
+    - '\b(there\s+has\s+to\s+be\s+a\s+better\s+way|surely\s+there.s\s+a\s+better)\b'
+  manual_workaround:
+    - '\b(do(ing)?\s+it\s+manually|still\s+using\s+(excel|spreadsheet|google\s+sheet))\b'
+    - '\b(copy.?past\w+\s+(every|each|all)|manually\s+(enter|copy|update|send))\b'
+    - '\b(hacky\s+(solution|workaround)|duct\s+tape\s+solution|cobbled\s+together)\b'
+    - '\b(no\s+automation|zero\s+automation|not\s+automated\s+yet)\b'
+    - '\b(build\w*\s+my\s+own\s+(script|tool|bot|spreadsheet)\s+because)\b'
+  too_expensive:
+    - '\b(can.t\s+afford|too\s+expensive\s+for\s+(me|us|small|solo)|out\s+of\s+my\s+budget)\b'
+    - '\b(enterprise\s+(pricing|plan|only)\s+(but|and)\s+i.m\s+(just|only|a))\b'
+    - '\b(overkill\s+for\s+(my|our|a\s+small)|way\s+more\s+than\s+I\s+need)\b'
+    - '\b(\$\d+\s*(\/mo|per\s+month|a\s+month)\s+is\s+too\s+much\s+for)\b'
+    - '\b(free\s+plan\s+(is\s+(useless|terrible|limited)|doesn.t\s+include))\b'
+  validated_pain:
+    - '\b(built\s+(this|it)\s+(because|after|since)\s+I\s+(couldn.t|was\s+frustrated|needed))\b'
+    - '\b(scratching\s+my\s+own\s+itch|solved\s+my\s+own\s+problem)\b'
+    - '\b(made\s+for\s+myself.{0,30}(now|and)\s+(selling|charging|monetiz))\b'
+    - '\b(started\s+as\s+an?\s+internal\s+tool)\b'
+  gap_spotted:
+    - '\b(nobody\s+(has\s+built|serves?|is\s+doing|offers?)\s+this)\b'
+    - '\b(gap\s+in\s+the\s+market|underserved\s+(niche|market|segment))\b'
+    - '\b(no\s+(good|decent|affordable|simple)\s+(tool|solution|app|service)\s+for)\b'
+    - '\b(market\s+gap\s+(I\s+)?(noticed|found|spotted|identified))\b'
+
+extractions:
+  pain_type:
+    display: "Type of Pain"
+    terms:
+      time_waste:
+        name: "Time sink / manual work"
+        patterns:
+          - '\b(wast\w+\s+(time|hours?)|time.?consuming|hours?\s+(every|per)\s+(week|day|month))\b'
+          - '\b(manually\s+(do|doing|enter|copy|update|send|process))\b'
+          - '\b(do\w*\s+it\s+by\s+hand|still\s+do\w*\s+this\s+manually)\b'
+      too_expensive:
+        name: "Pricing / can't afford"
+        patterns:
+          - '\b(too\s+expensive|can.t\s+afford|out\s+of\s+budget|overpriced)\b'
+          - '\b(enterprise\s+pricing|only\s+for\s+big\s+companies|small\s+business\s+can.t)\b'
+          - '\b(\$\d+\s*(\/mo|per\s+month)|monthly\s+fee\s+is\s+too)\b'
+      too_complex:
+        name: "Overkill / too complex"
+        patterns:
+          - '\b(too\s+complex|overkill|too\s+many\s+features|overwhelming|bloated)\b'
+          - '\b(just\s+want\s+(something\s+)?simple|all\s+I\s+need\s+is)\b'
+          - '\b(steep\s+learning\s+curve|hard\s+to\s+set\s+up|takes\s+forever\s+to\s+configure)\b'
+      missing_feature:
+        name: "Missing / broken feature"
+        patterns:
+          - '\b(missing\s+feature|no\s+support\s+for|doesn.t\s+(support|have|do|handle))\b'
+          - '\b(wish\s+(it|they)\s+(had|supported|could)|feature\s+request)\b'
+          - '\b(broken|doesn.t\s+work\s+(with|for)|bugs?\s+every\s+time)\b'
+      no_integration:
+        name: "No integration / works in silo"
+        patterns:
+          - '\b(no\s+integration\s+with|doesn.t\s+integrate|can.t\s+connect\s+to)\b'
+          - '\b(works\s+in\s+silo|doesn.t\s+talk\s+to|copy.?past\w+\s+between)\b'
+          - '\b(api\s+(doesn.t\s+exist|is\s+terrible|is\s+missing|not\s+available))\b'
+      bad_ux:
+        name: "Bad UX / hard to use"
+        patterns:
+          - '\b(terrible\s+(ux|ui|interface|design)|confusing\s+interface)\b'
+          - '\b(takes\s+\d+\s+(clicks?|steps?)\s+to\s+(just\s+)?do)\b'
+          - '\b(not\s+intuitive|hard\s+to\s+navigate|outdated\s+(ui|design|interface))\b'
+      trust_privacy:
+        name: "Trust / privacy concern"
+        patterns:
+          - '\b(don.t\s+trust\s+(them|it)\s+with|privacy\s+(concern|issue|problem))\b'
+          - '\b(don.t\s+want\s+(my|our)\s+(data|files?|info)\s+(uploaded|stored|sent))\b'
+          - '\b(gdpr|data\s+sovereignty|on.?premise\s+only|can.t\s+use\s+cloud)\b'
+
+  niche:
+    display: "Niche / Audience"
+    terms:
+      solopreneur:
+        name: "Solopreneur / one-person biz"
+        patterns:
+          - '\b(solo\s+(founder|operator|business)|one.person\s+(business|shop|operation))\b'
+          - '\b(solopreneur|just\s+me|I\s+run\s+(my|a)\s+business\s+(alone|by\s+myself))\b'
+      freelancer:
+        name: "Freelancer / consultant"
+        patterns: ['\bfreelancer?\b', '\bconsultant\b', '\bindependent\s+contractor\b', '\bself.employed\b']
+      small_biz:
+        name: "Small business (2–20 people)"
+        patterns:
+          - '\bsmall\s+business\b'
+          - '\b(we.re|we\s+are)\s+(a\s+)?(small|tiny|2|3|4|5).{0,20}(person|people|team|employee)\b'
+      etsy_seller:
+        name: "Etsy / handmade seller"
+        patterns: ['\betsy\b', '\bhandmade\s+(seller|shop|business)\b', '\bcreative\s+(business|maker)\b']
+      content_creator:
+        name: "Content creator / influencer"
+        patterns:
+          - '\bcontent\s+creator\b'
+          - '\b(youtuber|tiktok\s+creator|instagram\s+(creator|business))\b'
+          - '\b(growing\s+(my\s+)?channel|monetiz\w+\s+(my\s+)?content)\b'
+      agency:
+        name: "Agency / studio"
+        patterns: ['\b(marketing|design|dev|creative|seo)\s+agency\b', '\bwe\s+run\s+an\s+agency\b']
+      restaurant_food:
+        name: "Restaurant / food biz"
+        patterns: ['\b(restaurant|cafe|food\s+(truck|business)|catering|bakery)\b']
+      real_estate:
+        name: "Real estate"
+        patterns: ['\b(real\s+estate\s+(agent|investor|broker)|realtor|property\s+manager)\b']
+      tradesperson:
+        name: "Trades / contractor"
+        patterns: ['\b(plumber|electrician|contractor|builder|tradesperson|handyman)\b']
+      accountant_bookkeeper:
+        name: "Accountant / bookkeeper"
+        patterns: ['\b(accountant|bookkeeper|CPA|tax\s+(preparer|professional))\b']
+      coach_therapist:
+        name: "Coach / therapist"
+        patterns: ['\b(life\s+coach|therapist|counselor|fitness\s+coach|business\s+coach)\b']
+      photographer:
+        name: "Photographer / videographer"
+        patterns: ['\b(photographer|videographer|photo\s+(business|studio|editing))\b']
+      ecommerce_seller:
+        name: "E-commerce seller"
+        patterns: ['\b(shopify\s+(store|seller|merchant)|amazon\s+(fba|seller)|ecommerce\s+(store|seller))\b']
+
+  current_workaround:
+    display: "Current Workaround"
+    terms:
+      spreadsheet:
+        name: "Spreadsheet (Excel / Sheets)"
+        patterns:
+          - '\b(excel|google\s+sheet|spreadsheet)\b'
+          - '\b(tracking\s+in\s+(excel|sheets?|spreadsheet))\b'
+      paper_manual:
+        name: "Paper / fully manual"
+        patterns:
+          - '\b(pen\s+and\s+paper|paper\s+(form|invoice|record)|write\s+it\s+down)\b'
+          - '\b(do\w*\s+it\s+all\s+manually|fully\s+manual\s+process)\b'
+      too_many_tools:
+        name: "Cobbled multi-tool stack"
+        patterns:
+          - '\b(using\s+\d+\s+different\s+tools|juggling\s+(multiple|too\s+many)\s+tools)\b'
+          - '\b(cobbled\s+together|duct\s+tape|patchwork\s+of\s+tools)\b'
+          - '\b(zapier\s+to\s+glue|automate\s+between\s+(apps|tools))\b'
+      email_based:
+        name: "Email / messaging hack"
+        patterns:
+          - '\b(managing\s+(clients?|projects?|orders?)\s+via\s+email)\b'
+          - '\b(email\s+thread\s+(for|as|instead\s+of)|inbox\s+as\s+(my\s+)?crm)\b'
+      custom_script:
+        name: "Custom script / DIY code"
+        patterns:
+          - '\b(wrote\s+(a\s+)?(python\s+)?script|built\s+(my\s+own|a\s+custom)\s+(script|tool|bot))\b'
+          - '\b(hacky\s+script|automation\s+script|quick\s+script\s+to)\b'
+      existing_expensive_tool:
+        name: "Existing tool (overpriced/broken)"
+        patterns:
+          - '\b(using\s+(salesforce|hubspot|monday|airtable|notion|asana|quickbooks)\s+but)\b'
+          - '\b(paying\s+for\s+\w+\s+but\s+(it.s|it\s+doesn.t|I\s+only))\b'
+
+  solution_shape:
+    display: "Shape of Solution Wanted"
+    terms:
+      simple_app:
+        name: "Simple focused app"
+        patterns:
+          - '\b(just\s+(a\s+)?simple\s+(app|tool|website)|nothing\s+fancy|basic\s+(app|tool))\b'
+          - '\b(one\s+(thing|feature|job)\s+(and|only|well)|does\s+one\s+thing\s+well)\b'
+      automation:
+        name: "Automation / no-touch workflow"
+        patterns:
+          - '\b(automat\w+\s+(this|it|the\s+process)|set\s+and\s+forget|runs?\s+itself)\b'
+          - '\b(automatically\s+(send|update|sync|generate|post))\b'
+      template:
+        name: "Template / generator"
+        patterns:
+          - '\b(template\s+(generator|for|that\s+auto)|auto.?generat\w+\s+(the\s+)?(template|doc|pdf))\b'
+          - '\b(fill\s+in\s+the\s+blanks|pre.?built\s+template)\b'
+      integration:
+        name: "Integration / bridge"
+        patterns:
+          - '\b(integrate\s+with|connect\s+(to|with)|bridge\s+between|sync\s+between)\b'
+          - '\b(middleware|glue\s+between|plug.?in\s+for)\b'
+      dashboard:
+        name: "Dashboard / single view"
+        patterns:
+          - '\b(single\s+(dashboard|view|place)\s+(for|to\s+see)\s+all)\b'
+          - '\b(one\s+place\s+to\s+(see|manage|track)\s+everything)\b'
+          - '\b(overview\s+of\s+all|consolidated\s+view)\b'
+      ai_assistant:
+        name: "AI assistant / copilot"
+        patterns:
+          - '\b(ai\s+(assistant|helper|copilot)\s+for|ai\s+that\s+(handles?|does?|automat))\b'
+          - '\b(chatbot\s+for\s+(my\s+)?(business|clients?|customers?))\b'
+
+notable_quotes:
+  min_score: 2
+  trigger_extractions:
+    - pain_type
+    - niche
+    - current_workaround
