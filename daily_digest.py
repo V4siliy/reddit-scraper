@@ -102,8 +102,9 @@ def format_digest(posts: list[dict], date_str: str) -> str:
     header = f"<b>Reddit Side Projects — {date_str}</b>"
     entries: list[str] = []
     for i, post in enumerate(posts, 1):
-        title = html.escape(post["title"][:80])
-        desc = html.escape(make_description(post))
+        raw_title = post["title"]
+        title = html.escape(raw_title[:77] + "…" if len(raw_title) > 80 else raw_title)
+        desc = html.escape(make_description(post).replace("\\~", "~").replace("\\.", "."))
         sub = html.escape(post["subreddit"])
         score = post["score"]
         url = post["url"]
