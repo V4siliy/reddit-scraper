@@ -50,8 +50,12 @@ PROMOTED_TITLE_MAX_CHARS = 100
 
 STEP2_SYSTEM_PROMPT = (
     "You analyze Reddit posts about side projects, AI tools, and technology. "
-    "Given a post (title, body, and comments), write a 2-3 sentence plain-text summary "
-    "suitable for a Telegram digest — concise, factual, engaging, no markdown or HTML. "
+    "For each post produce two things:\n"
+    "1. headline — a punchy rewritten title (≤80 chars) that captures the core idea "
+    "more compellingly than the original. Think newsletter subject line, not clickbait.\n"
+    "2. tagline — one sharp sentence (≤120 chars) that delivers the key insight or "
+    "takeaway. Write it as a statement worth sharing, not a description of what the post says.\n"
+    "No markdown, no HTML. Plain text only.\n"
     "Also list indices of top-level COMMENT[N] entries (by their 0-based N) that discuss "
     "a completely independent shareable project, not just a reaction to the main post. "
     "If no comment qualifies, return an empty list for promoted_comment_indices."
@@ -61,9 +65,9 @@ STEP4_SYSTEM_PROMPT = (
     "Format the provided Reddit topics into a Telegram HTML digest. "
     "Allowed tags only: <b>, <i>, <a href='...'>, <code>. "
     "Each entry must follow this exact structure:\n\n"
-    "RANK. <a href=\"POST_URL\"><b>TITLE</b></a>\n"
+    "RANK. <a href=\"POST_URL\"><b>HEADLINE</b></a>\n"
     "r/SUBREDDIT · ↑SCORE · NUM_COMMENTS comments\n"
-    "DESCRIPTION\n\n"
+    "TAGLINE\n\n"
     "Open the digest with: <b>Reddit Side Projects — DATE</b>\n\n"
     "Never place raw URLs as visible text — always use <a href> anchor tags. "
     "Output only the formatted HTML digest, nothing else."
@@ -97,7 +101,8 @@ class Topic(BaseModel):
 
 
 class TopicAnalysis(BaseModel):
-    description: str
+    headline: str
+    tagline: str
     promoted_comment_indices: list[int]
 
 
@@ -107,7 +112,8 @@ class DigestText(BaseModel):
 
 class AnalyzedTopic(BaseModel):
     topic: Topic
-    description: str
+    headline: str
+    tagline: str
     rank_score: float
 
 
@@ -266,7 +272,7 @@ async def _safe_analyze_topic(
         result = await agent.run(topic_context_text(topic))
         analysis: TopicAnalysis = result.output
         promoted = [
-            promoted_comment_to_topic(topic.top_comments[idx], topic, idx)
+            promoted_comment_to_topic(topic.top_comments[idx], parent=topic, index=idx)
             for idx in analysis.promoted_comment_indices
             if 0 <= idx < len(topic.top_comments)
         ]
@@ -292,7 +298,8 @@ async def analyze_all_topics(topics: list[Topic], model: OpenAIChatModel) -> lis
         original, analysis, promoted = outcome
         results.append(AnalyzedTopic(
             topic=original,
-            description=analysis.description,
+            headline=analysis.headline,
+            tagline=analysis.tagline,
             rank_score=compute_rank_score(original),
         ))
         promoted_topics.extend(promoted)
@@ -300,7 +307,8 @@ async def analyze_all_topics(topics: list[Topic], model: OpenAIChatModel) -> lis
     for synthetic in promoted_topics:
         results.append(AnalyzedTopic(
             topic=synthetic,
-            description=synthetic.selftext_preview,
+            headline=synthetic.title,
+            tagline=synthetic.selftext_preview,
             rank_score=compute_rank_score(synthetic),
         ))
 
@@ -313,10 +321,10 @@ def _topics_to_prompt(topics: list[AnalyzedTopic], date_str: str) -> str:
     for i, at in enumerate(topics, 1):
         t = at.topic
         lines.append(
-            f"{i}. title={t.title!r} subreddit={t.subreddit!r} "
+            f"{i}. headline={at.headline!r} subreddit={t.subreddit!r} "
             f"score={t.score} num_comments={t.num_comments} url={t.url}"
         )
-        lines.append(f"   description: {at.description}")
+        lines.append(f"   tagline: {at.tagline}")
         lines.append("")
     return "\n".join(lines)
 
