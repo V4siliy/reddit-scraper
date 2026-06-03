@@ -1,0 +1,150 @@
+name: "AI Ideas Book"
+description: "Reddit discussions about AI business opportunities, market gaps, and SaaS ideas worth building"
+time_filter: "week"
+date_from: null
+date_to: null
+min_score: 1
+
+subreddits:
+  - SaaS
+  - microsaas
+  - startup_ideas
+  - Entrepreneur
+  - indiehackers
+  - artificial
+  - ChatGPT
+  - ClaudeAI
+  - ArtificialIntelligence
+  - technology
+  - SideProject
+  - startups
+
+search_queries:
+  - "AI SaaS idea nobody built"
+  - "AI business opportunity"
+  - "AI startup idea market gap"
+  - "underserved market AI could solve"
+  - "nobody has built AI tool for"
+  - "AI opportunity niche"
+  - "million dollar AI idea"
+  - "AI could automate this"
+  - "problem worth solving AI"
+  - "AI wrapper idea profitable"
+  - "AI agent idea business"
+  - "boring business AI opportunity"
+  - "AI disrupting industry"
+  - "vertical AI SaaS idea"
+  - "AI for small business idea"
+  - "AI tool missing market"
+  - "simple AI idea profitable"
+  - "AI automation opportunity"
+
+post_types:
+  idea_pitch:
+    - '\b(idea|concept|pitch|proposal)\b'
+    - '\b(what if (someone|you|we|ai) (built|made|created))\b'
+    - '\b(someone should build|why (isn.t there|doesn.t exist))\b'
+    - '\b(opportunity|gap in the market|untapped)\b'
+  market_insight:
+    - '\b(market gap|underserved|niche|vertical)\b'
+    - '\b(nobody (is|has)|no (good|existing|decent) (tool|solution|app))\b'
+    - '\b(pain point|frustrat\w+|annoying|tedious)\b'
+  ai_opportunity:
+    - '\b(ai (could|can|would|should) (automate|replace|handle|solve|do))\b'
+    - '\b(llm (for|to)|agent (for|to)|ai (agent|assistant|tool) (for|that))\b'
+    - '\b(automat\w+ with ai|ai.powered (solution|tool|service))\b'
+  validation:
+    - '\b(people (are|would) pay(ing)?|willing to pay|paying customers)\b'
+    - '\b(validated|found customers|people want(ed)?)\b'
+    - '\b(would you pay|who (would|will) pay)\b'
+
+extractions:
+  domains:
+    display: "Target Industries"
+    terms:
+      legal:
+        name: "Legal"
+        patterns: ['\b(legal|law|contract|compliance|attorney|lawyer)\b']
+      healthcare:
+        name: "Healthcare"
+        patterns: ['\b(health(care)?|medical|clinic|doctor|patient|hospital)\b']
+      finance:
+        name: "Finance"
+        patterns: ['\b(financ\w+|accounting|bookkeeping|tax|invoice|payroll)\b']
+      real_estate:
+        name: "Real estate"
+        patterns: ['\b(real estate|property|realt\w+|landlord|tenant|mortgage)\b']
+      hr_recruiting:
+        name: "HR / recruiting"
+        patterns: ['\b(hr|recruiting|hiring|resume|candidate|talent|onboarding)\b']
+      ecommerce:
+        name: "E-commerce"
+        patterns: ['\b(ecommerce|e-commerce|shopify|amazon seller|product listing)\b']
+      marketing:
+        name: "Marketing"
+        patterns: ['\b(marketing|seo|ads|copywriting|lead gen\w*|outreach)\b']
+      devtools:
+        name: "Dev tools"
+        patterns: ['\b(developer|devops|ci.?cd|code review|api|debugging)\b']
+      education:
+        name: "Education"
+        patterns: ['\b(educat\w+|tutoring|learning|course|student|teacher)\b']
+      smb:
+        name: "SMB / local business"
+        patterns: ['\b(small business|local business|smb|brick and mortar|mom and pop)\b']
+
+  idea_type:
+    display: "Idea Type"
+    terms:
+      automation:
+        name: "Automation / workflow"
+        patterns: ['\b(automat\w+|workflow|pipeline|batch|repetitive task)\b']
+      ai_agent:
+        name: "AI agent"
+        patterns: ['\b(ai agent|autonomous|agentic|multi.?agent)\b']
+      data_extraction:
+        name: "Data extraction / parsing"
+        patterns: ['\b(extract\w+|pars\w+|scraping|data (processing|pipeline|transform))\b']
+      content_gen:
+        name: "Content generation"
+        patterns: ['\b(content (generat\w+|creat\w+)|writ\w+ (tool|assistant)|copy\w*)\b']
+      search_discovery:
+        name: "Search / discovery"
+        patterns: ['\b(search|discover\w+|find\w+|recommendation|personaliz\w+)\b']
+      monitoring:
+        name: "Monitoring / alerts"
+        patterns: ['\b(monitor\w+|alert\w+|notif\w+|track\w+|watch\w+)\b']
+      chat_assistant:
+        name: "Chat / assistant"
+        patterns: ['\b(chatbot|chat (assistant|interface|ui)|conversational)\b']
+      analysis:
+        name: "Analysis / insights"
+        patterns: ['\b(analys\w+|insight\w+|report\w+|dashboard|intelligence)\b']
+
+notable_quotes:
+  min_score: 3
+  trigger_extractions:
+    - domains
+    - idea_type
+
+step2_system_prompt: |
+  You analyze Reddit posts and discussions about AI business opportunities and SaaS ideas.
+  For each post produce two things:
+  1. headline — a crisp, book-worthy idea title (≤80 chars) written as a product concept, not a description of the post. Examples: "AI Contract Reviewer for Freelancers", "Automated Competitive Intelligence for SMBs", "AI Receptionist for Solo Practitioners".
+  2. tagline — one sharp sentence (≤120 chars) covering: the problem, why AI makes it uniquely solvable today, and who would pay for it.
+  No markdown, no HTML. Plain text only.
+  Also list indices of top-level COMMENT[N] entries that describe a genuinely different, concrete AI business idea — not just agreement or elaboration. If none qualify, return an empty list.
+
+step4_system_prompt: |
+  Format the provided AI business ideas as a Telegram HTML digest for a book called "AI Ideas".
+  Allowed tags only: <b>, <i>, <a href='...'>, <code>.
+  Each entry must follow this exact structure:
+
+  RANK. <a href="POST_URL"><b>HEADLINE</b></a>
+  r/SUBREDDIT · ↑SCORE · NUM_COMMENTS comments
+  TAGLINE
+
+  Open the digest with: <b>AI Ideas — DATE</b>
+
+  Never place raw URLs as visible text — always use <a href> anchor tags.
+  Output only the formatted HTML digest, nothing else.

@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 from operator import attrgetter
 from pathlib import Path
 
+from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIChatModel
@@ -128,6 +129,8 @@ class Env(BaseModel):
     top_n: int
     step2_model: str
     step4_model: str
+    step2_prompt: str = STEP2_SYSTEM_PROMPT
+    step4_prompt: str = STEP4_SYSTEM_PROMPT
 
 
 def _require_env(name: str) -> str:
@@ -285,9 +288,13 @@ async def _safe_analyze_topic(
         return None
 
 
-async def analyze_all_topics(topics: list[Topic], model: OpenAIChatModel) -> list[AnalyzedTopic]:
+async def analyze_all_topics(
+    topics: list[Topic],
+    model: OpenAIChatModel,
+    system_prompt: str = STEP2_SYSTEM_PROMPT,
+) -> list[AnalyzedTopic]:
     """Run flash model on all topics in parallel; collect descriptions and promoted comments."""
-    agent = Agent(model, output_type=TopicAnalysis, system_prompt=STEP2_SYSTEM_PROMPT)
+    agent = Agent(model, output_type=TopicAnalysis, system_prompt=system_prompt)
     outcomes = await asyncio.gather(*[_safe_analyze_topic(agent, t) for t in topics])
 
     results: list[AnalyzedTopic] = []
@@ -333,9 +340,10 @@ async def format_digest(
     topics: list[AnalyzedTopic],
     date_str: str,
     model: OpenAIChatModel,
+    system_prompt: str = STEP4_SYSTEM_PROMPT,
 ) -> str:
     """Run the step-4 formatter model to produce Telegram HTML from the top topics."""
-    agent = Agent(model, output_type=DigestText, system_prompt=STEP4_SYSTEM_PROMPT)
+    agent = Agent(model, output_type=DigestText, system_prompt=system_prompt)
     result = await agent.run(_topics_to_prompt(topics, date_str))
     return result.output.html
 
@@ -383,14 +391,14 @@ async def async_main(topics: list[Topic], env: Env) -> None:
 
     print(f"Step 2: analyzing {len(topics)} topics with {env.step2_model}...")
     flash_model = make_openrouter_model(env.step2_model, env.openrouter_api_key)
-    analyzed = await analyze_all_topics(topics, flash_model)
+    analyzed = await analyze_all_topics(topics, flash_model, system_prompt=env.step2_prompt)
     analyzed.sort(key=attrgetter("rank_score"), reverse=True)
     top = analyzed[: env.top_n]
 
     date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     print(f"Step 4: formatting top {len(top)} topics with {env.step4_model}...")
     formatter_model = make_openrouter_model(env.step4_model, env.openrouter_api_key)
-    digest_html = await format_digest(top, date_str, formatter_model)
+    digest_html = await format_digest(top, date_str, formatter_model, system_prompt=env.step4_prompt)
 
     chunks = split_into_chunks(digest_html)
     await send_digest_chunks(chunks, env.tg_token, env.tg_chat_id)
@@ -398,11 +406,16 @@ async def async_main(topics: list[Topic], env: Env) -> None:
 
 
 def main() -> None:
+    load_dotenv()
     env = load_env()
     config = load_profile(env.profile_path)
     config.date_from = None
     config.date_to = None
     config.time_filter = env.time_filter
+    if config.step2_system_prompt:
+        env = env.model_copy(update={"step2_prompt": config.step2_system_prompt})
+    if config.step4_system_prompt:
+        env = env.model_copy(update={"step4_prompt": config.step4_system_prompt})
 
     reddit = create_reddit(
         env.reddit_client_id,

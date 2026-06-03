@@ -10,3 +10,4 @@ wheels/
 .venv
 .idea/
 .python-version
+/.env

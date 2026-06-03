@@ -62,6 +62,8 @@ class Config:
     notable_min_score: int
     notable_trigger_extractions: list[str]
     source_path: Path
+    step2_system_prompt: str | None = None
+    step4_system_prompt: str | None = None
 
 
 def _compile(patterns: list[str]) -> list[re.Pattern]:
@@ -109,6 +111,8 @@ def load_profile(path: Path) -> Config:
         notable_min_score=nq.get("min_score", 3),
         notable_trigger_extractions=nq.get("trigger_extractions", []),
         source_path=path,
+        step2_system_prompt=raw.get("step2_system_prompt") or None,
+        step4_system_prompt=raw.get("step4_system_prompt") or None,
     )
 
 
