@@ -3,12 +3,11 @@
 Env vars required:
   REDDIT_CLIENT_ID
   REDDIT_CLIENT_SECRET
-  TELEGRAM_BOT_TOKEN
-  TELEGRAM_CHAT_ID
+  TELEGRAM_BOT_TOKEN      default channel; overridden per-profile via telegram_chat_id in YAML
   OPENROUTER_API_KEY
 
 Env vars optional:
-  REDDIT_PROFILE      path to YAML profile (default: profiles/ai_side_projects.yaml)
+  REDDIT_PROFILES     comma-separated profile paths (default: profiles/ai_side_projects.yaml)
   REDDIT_TIME_FILTER  hour|day|week|month|year|all (default: day)
   DIGEST_TOP_N        projects per digest (default: 10)
   STEP2_MODEL         OpenRouter model for per-topic descriptions (default: google/gemini-3.1-flash-lite)
@@ -122,15 +121,25 @@ class Env(BaseModel):
     reddit_client_id: str
     reddit_client_secret: str
     tg_token: str
-    tg_chat_id: str
+    tg_chat_id: str | None
     openrouter_api_key: str
-    profile_path: Path
+    profile_paths: list[Path]
     time_filter: str
     top_n: int
     step2_model: str
     step4_model: str
-    step2_prompt: str = STEP2_SYSTEM_PROMPT
-    step4_prompt: str = STEP4_SYSTEM_PROMPT
+
+
+class RunConfig(BaseModel):
+    tg_token: str
+    tg_chat_id: str
+    openrouter_api_key: str
+    top_n: int
+    step2_model: str
+    step4_model: str
+    step2_prompt: str
+    step4_prompt: str
+    profile_name: str
 
 
 def _require_env(name: str) -> str:
@@ -141,20 +150,50 @@ def _require_env(name: str) -> str:
     return val
 
 
+def _parse_profile_paths() -> list[Path]:
+    profiles_raw = os.environ.get("REDDIT_PROFILES", "").strip()
+    if profiles_raw:
+        return [Path(p.strip()) for p in profiles_raw.split(",") if p.strip()]
+    single = os.environ.get("REDDIT_PROFILE", "").strip()
+    if single:
+        return [Path(single)]
+    return [PROFILES_DIR / "ai_side_projects.yaml"]
+
+
 def load_env() -> Env:
     return Env(
         reddit_client_id=_require_env("REDDIT_CLIENT_ID"),
         reddit_client_secret=_require_env("REDDIT_CLIENT_SECRET"),
         tg_token=_require_env("TELEGRAM_BOT_TOKEN"),
-        tg_chat_id=_require_env("TELEGRAM_CHAT_ID"),
+        tg_chat_id=os.environ.get("TELEGRAM_CHAT_ID", "").strip() or None,
         openrouter_api_key=_require_env("OPENROUTER_API_KEY"),
-        profile_path=Path(
-            os.environ.get("REDDIT_PROFILE") or PROFILES_DIR / "ai_side_projects.yaml"
-        ),
+        profile_paths=_parse_profile_paths(),
         time_filter=os.environ.get("REDDIT_TIME_FILTER", DEFAULT_TIME_FILTER),
         top_n=int(os.environ.get("DIGEST_TOP_N", str(DEFAULT_TOP_N))),
         step2_model=os.environ.get("STEP2_MODEL", DEFAULT_STEP2_MODEL),
         step4_model=os.environ.get("STEP4_MODEL", DEFAULT_STEP4_MODEL),
+    )
+
+
+def build_run_config(env: Env, config: Config) -> RunConfig:
+    chat_id = config.telegram_chat_id or env.tg_chat_id
+    if not chat_id:
+        print(
+            f"Error: no telegram_chat_id for profile '{config.name}' "
+            "and TELEGRAM_CHAT_ID env var is not set",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return RunConfig(
+        tg_token=env.tg_token,
+        tg_chat_id=chat_id,
+        openrouter_api_key=env.openrouter_api_key,
+        top_n=env.top_n,
+        step2_model=env.step2_model,
+        step4_model=env.step4_model,
+        step2_prompt=config.step2_system_prompt or STEP2_SYSTEM_PROMPT,
+        step4_prompt=config.step4_system_prompt or STEP4_SYSTEM_PROMPT,
+        profile_name=config.name,
     )
 
 
@@ -379,43 +418,35 @@ async def send_digest_chunks(chunks: list[str], tg_token: str, tg_chat_id: str) 
             )
 
 
-async def async_main(topics: list[Topic], env: Env) -> None:
+async def async_main(topics: list[Topic], run_cfg: RunConfig) -> None:
     if not topics:
-        async with Bot(token=env.tg_token) as bot:
+        async with Bot(token=run_cfg.tg_token) as bot:
             await bot.send_message(
-                chat_id=env.tg_chat_id,
-                text="Reddit digest: no posts found today.",
+                chat_id=run_cfg.tg_chat_id,
+                text=f"Reddit digest ({run_cfg.profile_name}): no posts found today.",
             )
         print("No posts found, sent placeholder message.")
         return
 
-    print(f"Step 2: analyzing {len(topics)} topics with {env.step2_model}...")
-    flash_model = make_openrouter_model(env.step2_model, env.openrouter_api_key)
-    analyzed = await analyze_all_topics(topics, flash_model, system_prompt=env.step2_prompt)
+    print(f"Step 2: analyzing {len(topics)} topics with {run_cfg.step2_model}...")
+    flash_model = make_openrouter_model(run_cfg.step2_model, run_cfg.openrouter_api_key)
+    analyzed = await analyze_all_topics(topics, flash_model, system_prompt=run_cfg.step2_prompt)
     analyzed.sort(key=attrgetter("rank_score"), reverse=True)
-    top = analyzed[: env.top_n]
+    top = analyzed[: run_cfg.top_n]
 
     date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
-    print(f"Step 4: formatting top {len(top)} topics with {env.step4_model}...")
-    formatter_model = make_openrouter_model(env.step4_model, env.openrouter_api_key)
-    digest_html = await format_digest(top, date_str, formatter_model, system_prompt=env.step4_prompt)
+    print(f"Step 4: formatting top {len(top)} topics with {run_cfg.step4_model}...")
+    formatter_model = make_openrouter_model(run_cfg.step4_model, run_cfg.openrouter_api_key)
+    digest_html = await format_digest(top, date_str, formatter_model, system_prompt=run_cfg.step4_prompt)
 
     chunks = split_into_chunks(digest_html)
-    await send_digest_chunks(chunks, env.tg_token, env.tg_chat_id)
+    await send_digest_chunks(chunks, run_cfg.tg_token, run_cfg.tg_chat_id)
     print(f"Sent {len(top)} projects across {len(chunks)} message(s).")
 
 
 def main() -> None:
     load_dotenv()
     env = load_env()
-    config = load_profile(env.profile_path)
-    config.date_from = None
-    config.date_to = None
-    config.time_filter = env.time_filter
-    if config.step2_system_prompt:
-        env = env.model_copy(update={"step2_prompt": config.step2_system_prompt})
-    if config.step4_system_prompt:
-        env = env.model_copy(update={"step4_prompt": config.step4_system_prompt})
 
     reddit = create_reddit(
         env.reddit_client_id,
@@ -423,11 +454,20 @@ def main() -> None:
         user_agent="reddit-digest/1.0",
     )
 
-    print("Step 1: collecting posts from Reddit...")
-    topics = collect_topics(reddit, config)
-    print(f"Collected {len(topics)} unique topics.")
+    for profile_path in env.profile_paths:
+        print(f"\n── {profile_path.name} ──")
+        config = load_profile(profile_path)
+        config.date_from = None
+        config.date_to = None
+        config.time_filter = env.time_filter
 
-    asyncio.run(async_main(topics, env))
+        run_cfg = build_run_config(env, config)
+
+        print("Step 1: collecting posts from Reddit...")
+        topics = collect_topics(reddit, config)
+        print(f"Collected {len(topics)} unique topics.")
+
+        asyncio.run(async_main(topics, run_cfg))
 
 
 if __name__ == "__main__":

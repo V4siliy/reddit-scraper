@@ -62,6 +62,7 @@ class Config:
     notable_min_score: int
     notable_trigger_extractions: list[str]
     source_path: Path
+    telegram_chat_id: str | None = None
     step2_system_prompt: str | None = None
     step4_system_prompt: str | None = None
 
@@ -111,6 +112,7 @@ def load_profile(path: Path) -> Config:
         notable_min_score=nq.get("min_score", 3),
         notable_trigger_extractions=nq.get("trigger_extractions", []),
         source_path=path,
+        telegram_chat_id=raw.get("telegram_chat_id") or None,
         step2_system_prompt=raw.get("step2_system_prompt") or None,
         step4_system_prompt=raw.get("step4_system_prompt") or None,
     )
