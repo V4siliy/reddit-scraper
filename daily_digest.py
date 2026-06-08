@@ -192,7 +192,9 @@ def build_run_config(env: Env, config: Config) -> RunConfig:
         step2_model=env.step2_model,
         step4_model=env.step4_model,
         step2_prompt=config.step2_system_prompt or STEP2_SYSTEM_PROMPT,
-        step4_prompt=config.step4_system_prompt or STEP4_SYSTEM_PROMPT,
+        step4_prompt=config.step4_system_prompt or STEP4_SYSTEM_PROMPT.replace(
+            "Reddit Side Projects", config.name
+        ),
         profile_name=config.name,
     )
 
