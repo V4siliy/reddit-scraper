@@ -17,18 +17,17 @@ Env vars optional:
 from __future__ import annotations
 
 import asyncio
-import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from operator import attrgetter
 from pathlib import Path
 
-from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ValidationError, computed_field, field_validator
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from telegram import Bot
 from telegram.constants import ParseMode
 
@@ -117,17 +116,34 @@ class AnalyzedTopic(BaseModel):
     rank_score: float
 
 
-class Env(BaseModel):
+class Env(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
     reddit_client_id: str
     reddit_client_secret: str
-    tg_token: str
-    tg_chat_id: str | None
+    tg_token: str = Field(validation_alias="telegram_bot_token")
+    tg_chat_id: str | None = Field(None, validation_alias="telegram_chat_id")
     openrouter_api_key: str
-    profile_paths: list[Path]
-    time_filter: str
-    top_n: int
-    step2_model: str
-    step4_model: str
+    reddit_profiles: str = ""
+    reddit_profile: str = ""
+    time_filter: str = Field(DEFAULT_TIME_FILTER, validation_alias="reddit_time_filter")
+    top_n: int = Field(DEFAULT_TOP_N, validation_alias="digest_top_n")
+    step2_model: str = DEFAULT_STEP2_MODEL
+    step4_model: str = DEFAULT_STEP4_MODEL
+
+    @field_validator("tg_chat_id", mode="before")
+    @classmethod
+    def _empty_to_none(cls, v: str | None) -> str | None:
+        return v.strip() or None if isinstance(v, str) else v
+
+    @computed_field
+    @property
+    def profile_paths(self) -> list[Path]:
+        if self.reddit_profiles:
+            return [Path(p.strip()) for p in self.reddit_profiles.split(",") if p.strip()]
+        if self.reddit_profile:
+            return [Path(self.reddit_profile)]
+        return [PROFILES_DIR / "ai_side_projects.yaml"]
 
 
 class RunConfig(BaseModel):
@@ -140,39 +156,6 @@ class RunConfig(BaseModel):
     step2_prompt: str
     step4_prompt: str
     profile_name: str
-
-
-def _require_env(name: str) -> str:
-    val = os.environ.get(name, "").strip()
-    if not val:
-        print(f"Error: {name} environment variable not set", file=sys.stderr)
-        sys.exit(1)
-    return val
-
-
-def _parse_profile_paths() -> list[Path]:
-    profiles_raw = os.environ.get("REDDIT_PROFILES", "").strip()
-    if profiles_raw:
-        return [Path(p.strip()) for p in profiles_raw.split(",") if p.strip()]
-    single = os.environ.get("REDDIT_PROFILE", "").strip()
-    if single:
-        return [Path(single)]
-    return [PROFILES_DIR / "ai_side_projects.yaml"]
-
-
-def load_env() -> Env:
-    return Env(
-        reddit_client_id=_require_env("REDDIT_CLIENT_ID"),
-        reddit_client_secret=_require_env("REDDIT_CLIENT_SECRET"),
-        tg_token=_require_env("TELEGRAM_BOT_TOKEN"),
-        tg_chat_id=os.environ.get("TELEGRAM_CHAT_ID", "").strip() or None,
-        openrouter_api_key=_require_env("OPENROUTER_API_KEY"),
-        profile_paths=_parse_profile_paths(),
-        time_filter=os.environ.get("REDDIT_TIME_FILTER", DEFAULT_TIME_FILTER),
-        top_n=int(os.environ.get("DIGEST_TOP_N", str(DEFAULT_TOP_N))),
-        step2_model=os.environ.get("STEP2_MODEL", DEFAULT_STEP2_MODEL),
-        step4_model=os.environ.get("STEP4_MODEL", DEFAULT_STEP4_MODEL),
-    )
 
 
 def build_run_config(env: Env, config: Config) -> RunConfig:
@@ -447,8 +430,11 @@ async def async_main(topics: list[Topic], run_cfg: RunConfig) -> None:
 
 
 def main() -> None:
-    load_dotenv()
-    env = load_env()
+    try:
+        env = Env()
+    except ValidationError as e:
+        print(f"Configuration error:\n{e}", file=sys.stderr)
+        sys.exit(1)
 
     reddit = create_reddit(
         env.reddit_client_id,

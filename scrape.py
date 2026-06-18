@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import uuid
@@ -20,9 +21,12 @@ from dataclasses import dataclass
 from datetime import datetime, timezone, date
 from pathlib import Path
 
+from dotenv import load_dotenv
 from tqdm import tqdm
 
 import praw
+
+load_dotenv()
 import yaml
 from rich.console import Console
 from rich.table import Table
@@ -486,8 +490,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Reddit scraper — config-driven via YAML profiles"
     )
-    parser.add_argument("--client-id", required=True, help="Reddit API client ID")
-    parser.add_argument("--client-secret", required=True, help="Reddit API client secret")
+    parser.add_argument("--client-id", default=os.environ.get("REDDIT_CLIENT_ID"), help="Reddit API client ID")
+    parser.add_argument("--client-secret", default=os.environ.get("REDDIT_CLIENT_SECRET"), help="Reddit API client secret")
     parser.add_argument("--user-agent", default="reddit-scraper/2.0")
     parser.add_argument("--profile", help="Path to YAML profile (skips interactive selection)")
     parser.add_argument("--limit", type=int, default=30, help="Max posts per query per subreddit")
@@ -504,6 +508,9 @@ def main() -> None:
     parser.add_argument("--output", default=f"results_{run_id}.json")
     parser.add_argument("--raw-output", default=f"raw_posts_{run_id}.json")
     args = parser.parse_args()
+
+    if not args.client_id or not args.client_secret:
+        parser.error("Reddit credentials required: pass --client-id/--client-secret or set REDDIT_CLIENT_ID/REDDIT_CLIENT_SECRET in .env")
 
     console = Console()
 
